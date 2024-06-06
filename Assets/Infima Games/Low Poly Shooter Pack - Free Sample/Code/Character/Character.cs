@@ -16,6 +16,8 @@ namespace InfimaGames.LowPolyShooterPack
 	{
 		#region FIELDS SERIALIZED
 
+		public Joystick joystick;
+
 		[Header("Inventory")]
 		
 		[Tooltip("Inventory.")]
@@ -44,14 +46,25 @@ namespace InfimaGames.LowPolyShooterPack
 		[SerializeField]
 		private Animator characterAnimator;
 
-		#endregion
+		[Header("WeaponSwitch")]
+        public float shakeThreshold = 0.3f;  // 调整这个阈值来检测摇动的灵敏度
+        public float shakeResetThreshold = 0.05f;  // 调整这个阈值来检测设备是否回正
+		public bool CanShakeSwitch = false;
+        private bool isShaking = false;
 
-		#region FIELDS
+        [Header("Reload")]
+        public float tiltThreshold = 0.5f; // 旋转阈值
+        public float tiltResetThreshold = 0.05f;  // 调整这个阈值来检测设备是否回正
+        public bool canTiltReload = false;
+        private bool isTilting = false;
+        #endregion
 
-		/// <summary>
-		/// True if the character is aiming.
-		/// </summary>
-		private bool aiming;
+        #region FIELDS
+
+        /// <summary>
+        /// True if the character is aiming.
+        /// </summary>
+        private bool aiming;
 		/// <summary>
 		/// True if the character is running.
 		/// </summary>
@@ -186,6 +199,9 @@ namespace InfimaGames.LowPolyShooterPack
 
 			//Refresh!
 			RefreshWeaponSetup();
+
+
+			RandomTarget.Fire += TryFire;
 		}
 		protected override void Start()
 		{
@@ -195,7 +211,12 @@ namespace InfimaGames.LowPolyShooterPack
 			layerActions = characterAnimator.GetLayerIndex("Layer Actions");
 			//Cache a reference to the overlay layer's index.
 			layerOverlay = characterAnimator.GetLayerIndex("Layer Overlay");
-		}
+
+            if (SystemInfo.supportsGyroscope)
+            {
+                Input.gyro.enabled = true;
+            }
+        }
 
 		protected override void Update()
 		{
@@ -219,43 +240,97 @@ namespace InfimaGames.LowPolyShooterPack
 			//Update Animator.
 			UpdateAnimator();
 
-            ShakeDetect();
+			if(CanShakeSwitch)
+			{
+                ShakeDetect();
+            }
+
+			if(canTiltReload)
+			{
+                DetectTilt();
+            }
         }
 
-        public float shakeThreshold = 0.3f;  // 调整这个阈值来检测摇动的灵敏度
-        public float resetThreshold = 0.05f;  // 调整这个阈值来检测设备是否回正
-        private bool isShaking = false;
+        private void TryFire()
+        {
+            // Ignore if we're not allowed to actually fire
+            if (!CanPlayAnimationFire())
+                return;
+
+            // Check if the weapon has ammunition
+            if (equippedWeapon.HasAmmunition())
+            {
+                // Has fire rate passed
+                if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
+                {
+                    Fire();
+                }
+            }
+            // Fire Empty
+            else
+            {
+                FireEmpty();
+            }
+        }
         private void ShakeDetect()
-		{
+        {
             //print(Input.acceleration);
 
-            // 获取设备在X轴上的加速度
+            // 获取设备在X轴和Y轴上的加速度
             float accelerationX = Input.acceleration.x;
+            float accelerationY = Input.acceleration.y;
 
             // 检测向左晃动
             if (accelerationX < -shakeThreshold && !isShaking)
             {
                 isShaking = true;
                 SwitchWeapon(-1);
-                Debug.Log("向左晃动");
+                //Debug.Log("向左晃动");
             }
             // 检测向右晃动
             else if (accelerationX > shakeThreshold && !isShaking)
             {
                 isShaking = true;
                 SwitchWeapon(1);
-                Debug.Log("向右晃动");
+                //Debug.Log("向右晃动");
             }
+			//print(accelerationX);
 
             // 检测设备是否回正
-            if (Mathf.Abs(accelerationX) < resetThreshold && isShaking)
+            if (Mathf.Abs(accelerationX) < shakeResetThreshold && isShaking)
             {
                 isShaking = false;
-                Debug.Log("回正");
+                //Debug.Log("回正");
             }
         }
 
-		protected override void LateUpdate()
+        private void DetectTilt()
+        {
+            float xRotationRate = Input.gyro.rotationRateUnbiased.x;
+            print(xRotationRate);
+            // 检测是否有足够的旋转
+            if (xRotationRate > tiltThreshold && !isTilting)
+            {
+                isTilting = true;
+                //Debug.Log("向前倾斜");
+            }
+            else if (xRotationRate < -tiltThreshold && !isTilting)
+            {
+                isTilting = true;
+				PlayReloadAnimation();
+                //Debug.Log("向后倾斜");
+            }
+
+            // 检测设备是否回正
+            if (Mathf.Abs(xRotationRate) < tiltResetThreshold && isTilting)
+            {
+                isTilting = false;
+                //Debug.Log("回正");
+            }
+        }
+
+
+        protected override void LateUpdate()
 		{
 			//We need a weapon for this!
 			if (equippedWeapon == null)
@@ -345,7 +420,10 @@ namespace InfimaGames.LowPolyShooterPack
 		private void PlayReloadAnimation()
 		{
 			#region Animation
+			if (equippedWeapon.GetAmmunitionCurrent() == equippedWeapon.GetAmmunitionTotal())
+				return;
 
+			RandomTarget.Instance.reloadCount++;
 			//Get the name of the animation state to play, which depends on weapon settings, and ammunition!
 			string stateName = equippedWeapon.HasAmmunition() ? "Reload" : "Reload Empty";
 			//Play the animation state!
@@ -380,6 +458,8 @@ namespace InfimaGames.LowPolyShooterPack
 			
 			//Equip The New Weapon.
 			inventory.Equip(index);
+
+			RandomTarget.Instance.weaponSwitchCount++;
 			//Refresh.
 			RefreshWeaponSetup();
 		}

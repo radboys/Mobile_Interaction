@@ -235,6 +235,7 @@ namespace InfimaGames.LowPolyShooterPack
             GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
             //Add velocity to the projectile.
             projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse;   
+            projectile.name = gameObject.name;
         }
 
         public override void FillAmmunition(int amount)

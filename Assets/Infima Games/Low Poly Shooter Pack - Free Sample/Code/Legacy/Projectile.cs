@@ -39,7 +39,7 @@ public class Projectile : MonoBehaviour {
 		//Ignore collisions with other projectiles.
 		if (collision.gameObject.GetComponent<Projectile>() != null)
 			return;
-		
+
 		// //Ignore collision if bullet collides with "Player" tag
 		// if (collision.gameObject.CompareTag("Player")) 
 		// {
@@ -56,7 +56,22 @@ public class Projectile : MonoBehaviour {
 		//
 		//If destroy on impact is false, start 
 		//coroutine with random destroy timer
-		if (!destroyOnImpact) 
+		if(collision.gameObject.name == "RedTarget" && gameObject.name == "RedDeagle")
+		{
+			RandomTarget.Instance.HitTarget(collision.gameObject);
+		}
+
+        if (collision.gameObject.name == "GreenTarget" && gameObject.name == "GreenDeagle")
+        {
+            RandomTarget.Instance.HitTarget(collision.gameObject);
+        }
+
+        if (collision.gameObject.name == "BlueTarget" && gameObject.name == "BlueDeagle")
+        {
+            RandomTarget.Instance.HitTarget(collision.gameObject);
+        }
+
+        if (!destroyOnImpact) 
 		{
 			StartCoroutine (DestroyTimer ());
 		}
