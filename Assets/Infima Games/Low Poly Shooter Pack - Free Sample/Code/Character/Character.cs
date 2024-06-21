@@ -202,8 +202,21 @@ namespace InfimaGames.LowPolyShooterPack
 
 
 			RandomTarget.Fire += TryFire;
+
+			RandomTarget.Reload += PlayReloadAnimation;
+
+			RandomTarget.SwitchWeapon += SwitchWeapon;
 		}
-		protected override void Start()
+
+        private void OnDestroy()
+        {
+            RandomTarget.Fire -= TryFire;
+
+            RandomTarget.Reload -= PlayReloadAnimation;
+
+            RandomTarget.SwitchWeapon -= SwitchWeapon;
+        }
+        protected override void Start()
 		{
 			//Cache a reference to the holster layer's index.
 			layerHolster = characterAnimator.GetLayerIndex("Layer Holster");
@@ -307,7 +320,7 @@ namespace InfimaGames.LowPolyShooterPack
         private void DetectTilt()
         {
             float xRotationRate = Input.gyro.rotationRateUnbiased.x;
-            print(xRotationRate);
+            //print(xRotationRate);
             // 检测是否有足够的旋转
             if (xRotationRate > tiltThreshold && !isTilting)
             {
@@ -412,6 +425,8 @@ namespace InfimaGames.LowPolyShooterPack
 			//Fire the weapon! Make sure that we also pass the scope's spread multiplier if we're aiming.
 			equippedWeapon.Fire();
 
+			RandomTarget.Instance.totalShootingCount++;
+
 			//Play firing animation.
 			const string stateName = "Fire";
 			characterAnimator.CrossFade(stateName, 0.05f, layerOverlay, 0);
@@ -504,9 +519,9 @@ namespace InfimaGames.LowPolyShooterPack
 		private void UpdateCursorState()
 		{
 			//Update cursor visibility.
-			Cursor.visible = !cursorLocked;
+			//Cursor.visible = !cursorLocked;
 			//Update cursor lock state.
-			Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
+			//Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
 		}
 
 		/// <summary>

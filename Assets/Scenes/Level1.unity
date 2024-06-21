@@ -97,8 +97,10 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: cd8f4b86d51b46646bb84132e3d67c91,
+    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: a0492620a8c13a64eab8314382fed8f8,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -123,7 +125,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &1472871548
+--- !u!1001 &512669752
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -186,51 +188,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: canTiltReload
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: tiltThreshold
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: CanShakeSwitch
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: resetThreshold
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: shakeThreshold
-      value: 0.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 2591825088216938556, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: tiltResetThreshold
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3606342004941824567, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4950843163529531129, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9094278580057318013, guid: 21839915a627e8841862b0b67f145fb8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -240,4 +197,4 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1472871548}
+  - {fileID: 512669752}
